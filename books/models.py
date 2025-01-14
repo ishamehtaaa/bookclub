@@ -1,86 +1,57 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
-
-class ContentWarning(models.Model):
-    """
-    Represents a content warning in a book. Used to provide information about if the book is suitable.
-    """
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
 
 class Book(models.Model):
     """
-    Represents a single book. Books can be voted on in multiple rounds.
+    A single instance of a book.
     """
+    STATUS_CHOICES = [
+            ('SUGGESTED', 'Suggested'),
+            ('VOTING', 'In Voting'),
+            ('SHORTLISTED', 'Shortlisted'),
+            ('SELECTED', 'Selected'),
+            ('ARCHIVED', 'Archived'),
+            ('VETOED', 'Vetoed')
+    ]
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    content_warnings = models.ManyToManyField(ContentWarning, blank=True)
-    date_suggested = models.DateTimeField(default=timezone.now)
     suggested_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    suggested_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+            max_length=20,
+            choices=STATUS_CHOICES,
+            default='SUGGESTED')
     
-    STATUS_CHOICES = [
-        ('AVAILABLE', 'Available for Voting'),
-        ('VETOED', 'Vetoed'),
-        ('SELECTED', 'Selected'),
-        ('COMPLETED', 'Completed')
-    ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='AVAILABLE')
-
-    def __str__(self):
-        return f"{self.title} by {self.author}"
-
-class VotingRound(models.Model):
-    """
-    A single voting round. Users will participate in a voting round and can cast a Vote (see below). 
-    There will usually be multiple voting rounds in a given month.
-    """
-    month = models.DateField(unique=True)
-    books = models.ManyToManyField(
-        Book,
-        related_name='voting_rounds',
-        limit_choices_to={'status': 'AVAILABLE'}
-    )
-    selected_book = models.ForeignKey(
-        Book, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        related_name='selected_for'
-    )
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"Voting for {self.month.strftime('%B %Y')}"
-
 class Vote(models.Model):
     """
-    A user's vote. They can vote YES/NO/VETO. If a book is vetoed, then it will never appear again in any voting rounds.
+    A decision made by a user about a given Book. The choice field can be one of (YES/NO/VETO).
+    Vetoing a book takes it out of the selection list permanently.
     """
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    voting_round = models.ForeignKey(VotingRound, on_delete=models.CASCADE)
-    
+
     VOTE_CHOICES = [
-        ('YES', 'Want to Read'),
-        ('NO', 'Not Interested'),
+        ('YES', 'Yes'),
+        ('NO', 'No'),
         ('VETO', 'Veto')
     ]
-    vote = models.CharField(max_length=4, choices=VOTE_CHOICES)
-    date_voted = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    choice = models.CharField(
+            max_length=5,
+            choices=VOTE_CHOICES
+            )
+    voted_at = models.DateTimeField(auto_now_add=True)
+
+class MonthlyPick(models.Model):
+    """
+    The book chosen in a given month.
+    """
+    book = models.ForeignKey(Book, on_delete=models.PROTECT)
+    month = models.DateField()
 
     class Meta:
-        unique_together = ['book', 'user', 'voting_round']
+        ordering = ['-month']
 
     def save(self, *args, **kwargs):
-        if self.vote == 'VETO':
-            self.book.status = 'VETOED'
-            self.book.save()
+        self.month = self.month.replace(day=1)
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.user.username}'s vote on {self.book.title}"
