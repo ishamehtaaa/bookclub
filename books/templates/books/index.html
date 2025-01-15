@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>Low Maintenance Book Club Home</title>
+  </head>
+  <body>
+    <h2>Recently Suggested:</h2>
+    <div>
+      {% for book in books %}
+      <p> {{ book }}</p>
+      {% endfor %}
+    </div>
+    <div>
+      <a href="{% url 'suggest' %}">Suggest a Book!</a>
+  </body>
+</html>
