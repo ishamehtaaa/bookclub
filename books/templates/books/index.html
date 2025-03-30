@@ -5,27 +5,29 @@
 {% block header %}
 <h1 class="main-title">Welcome to the Low Maintenance Book Club!</h1>
 {% endblock %}
-
 {% block content %}
-<div class="content-grid">
-    <div class="books-section">
-        <div class="section-card">
-            <h2 class="section-title">Recently Suggested:</h2>
-            <ul class="book-list">
-                {% for book in books %}
-                <li class="book-item">{{ book }}</li>
-                {% endfor %}
-            </ul>
+<div class="welcome-section">
+    <h1 class="hero-title">Welcome to the Low Maintenance Book Club!</h1>
+</div>
+
+<div class="content-sections">
+    <section class="main-section">
+        <h2 class="section-label">Recently Suggested:</h2>
+        <div class="book-entries">
+            {% for book in books %}
+            <article class="book-entry">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">{{ book.author }}</p>
+            </article>
+            {% endfor %}
         </div>
-    </div>
+    </section>
     
-    <div class="links-section">
-        <div class="section-card">
-            <h2 class="section-title">Quick Links</h2>
-            <div class="links-container">
-                <a href="{% url 'suggest' %}" class="action-link">Suggest a Book!</a>
-            </div>
+    <section class="side-section">
+        <h2 class="section-label">Quick Links</h2>
+        <div class="quick-links">
+            <a href="{% url 'suggest' %}" class="feature-link">SUGGEST A BOOK!</a>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

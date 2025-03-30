@@ -9,31 +9,32 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="main-nav">
-        <div class="nav-content">
-            <a href="{% url 'index' %}" class="logo">LMBC</a>
-            <div class="nav-links">
+    <header class="site-header">
+        <div class="header-content">
+            <a href="{% url 'index' %}" class="brand">LMBC</a>
+            <nav class="site-nav">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="nav-button">Logout</a>
+                    <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                    <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="nav-button">Login</a>
-                    <a href="{% url 'signup' %}" class="nav-button highlight">Sign Up</a>
+                    <div class="auth-links">
+                        <a href="{% url 'login' %}" class="nav-link">LOGIN</a>
+                        <a href="{% url 'signup' %}" class="nav-link emphasis">SIGN UP</a>
+                    </div>
                 {% endif %}
-            </div>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <main class="container">
-        {% block header %}{% endblock %}
-        
+    <main class="site-main">
         {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         {% block content %}{% endblock %}

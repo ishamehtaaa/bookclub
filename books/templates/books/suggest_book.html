@@ -1,13 +1,9 @@
-<html>
-  <head>
-    <title>Suggest a Book!</title>
-  </head>
-  <body>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Submit!</button>
-    </form>
-  </body>
-</html>
+{% extends 'books/base.html' %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit!</button>
+</form>
+{% endblock content %}
 
