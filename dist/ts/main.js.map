@@ -1,0 +1,1 @@
+{"mappings":"ACAA,QAAQ,GAAG,CAAC","sources":["<anon>","src/ts/main.ts"],"sourcesContent":["(function () {\nconsole.log('Hello from TypeScript!');\n\n})();\n//# sourceMappingURL=main.js.map\n","console.log('Hello from TypeScript!');\n"],"names":["console","log"],"version":3,"file":"main.js.map"}
