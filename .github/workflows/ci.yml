@@ -62,7 +62,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend
-        npm ci
+        npm install --save-dev parcel
     
     - name: Build Frontend
       run: |
