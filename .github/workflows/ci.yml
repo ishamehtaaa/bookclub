@@ -70,5 +70,7 @@ jobs:
         cd frontend
         npm run build
     
-    - name: Deploy to GitHub Pages
+    - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
+      with: 
+        folder: frontend
