@@ -1,4 +1,4 @@
-name: Django with Parcel CI/CD
+name: Build Parcel 
 
 on:
   push:
@@ -55,7 +55,6 @@ jobs:
       working-directory: ./frontend
       run: npm run build
     
-    # Create a settings file for GitHub Actions
     - name: Create local settings for GitHub Actions
       run: |
         cat > bookclub/local_settings.py << 'EOL'
@@ -72,7 +71,6 @@ jobs:
         }
         EOL
     
-    # Django tests and checks
     - name: Run Django migrations
       run: python manage.py migrate
       env:
@@ -91,7 +89,6 @@ jobs:
         DEBUG: 0
         DJANGO_SETTINGS_MODULE: bookclub.settings
     
-    # Prepare for deployment
     - name: Create deployment package
       run: |
         mkdir -p deployment
@@ -99,7 +96,6 @@ jobs:
         cp -r staticfiles deployment/
         cp manage.py deployment/
         cp -r requirements.txt deployment/
-        # Add any other necessary files for deployment
     
     - name: Upload deployment artifact
       uses: actions/upload-artifact@v3
@@ -107,7 +103,6 @@ jobs:
         name: django-app
         path: deployment/
 
-  # GitHub Pages deployment job
   deploy-pages:
     needs: build
     runs-on: ubuntu-latest
@@ -140,4 +135,5 @@ jobs:
       with:
         folder: frontend/dist
         branch: gh-pages
+
 
