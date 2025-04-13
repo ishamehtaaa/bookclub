@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "parcel": "^2.14.4",
+    "@parcel/transformer-sass": "^2.14.4",
     "typescript": "^5.1.6"
   },
   "browserslist": [

@@ -33,6 +33,7 @@ jobs:
           },
           "devDependencies": {
             "parcel": "^2.9.3",
+            "@parcel/transformer-sass": "^2.9.3",
             "typescript": "^5.1.6"
           },
           "browserslist": [
@@ -62,7 +63,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend
-        npm install --save-dev parcel
+        npm install
     
     - name: Build Frontend
       run: |
@@ -71,6 +72,3 @@ jobs:
     
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: frontend/dist
-        branch: gh-pages
