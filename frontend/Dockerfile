@@ -8,5 +8,4 @@ RUN npm install
 COPY . .
 # Expose the port Parcel runs on
 EXPOSE 1234
-# Use npm start as the default command
-CMD ["npm", "start"]
+CMD ["npm", "build"]
