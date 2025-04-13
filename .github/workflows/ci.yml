@@ -1,0 +1,76 @@
+name: Build Parcel
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Create frontend directory if it doesn't exist
+      run: mkdir -p frontend/src/ts frontend/src/scss
+    
+    - name: Create package.json
+      run: |
+        cat > frontend/package.json << 'EOL'
+        {
+          "name": "bookclub-frontend",
+          "version": "1.0.0",
+          "description": "Frontend assets for Book Club",
+          "scripts": {
+            "start": "parcel watch src/ts/*.ts src/scss/*.scss --host 0.0.0.0",
+            "build": "parcel build src/ts/*.ts src/scss/*.scss",
+            "build:github": "parcel build src/ts/*.ts src/scss/*.scss --public-url ./"
+          },
+          "devDependencies": {
+            "parcel": "^2.9.3",
+            "typescript": "^5.1.6"
+          },
+          "browserslist": [
+            "> 0.5%",
+            "last 2 versions",
+            "not dead"
+          ]
+        }
+        EOL
+    
+    - name: Create TypeScript file
+      run: |
+        cat > frontend/src/ts/main.ts << 'EOL'
+        console.log('Hello from TypeScript!');
+        EOL
+    
+    - name: Create SCSS file
+      run: |
+        cat > frontend/src/scss/main.scss << 'EOL'
+        body {
+          font-family: sans-serif;
+          background-color: #f5f5f5;
+          color: #333;
+        }
+        EOL
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm install
+    
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: frontend/dist
+        branch: gh-pages
