@@ -1,14 +1,12 @@
 {
   "name": "bookclub-frontend",
   "version": "1.0.0",
-  "description": "Frontend assets for the Book Club Django application",
+  "description": "Frontend assets for Book Club",
   "scripts": {
     "start": "parcel watch src/ts/*.ts src/scss/*.scss --host 0.0.0.0",
     "build": "parcel build src/ts/*.ts src/scss/*.scss --dist-dir ../bookclub/static/bookclub",
-    "build:github": "parcel build src/ts/*.ts src/scss/*.scss --public-url /bookclub/",
-    "clean": "rm -rf dist .parcel-cache ../bookclub/static/bookclub/js ../bookclub/static/bookclub/css"
+    "build:github": "parcel build src/ts/*.ts src/scss/*.scss --public-url ./"
   },
-  "dependencies": {},
   "devDependencies": {
     "parcel": "^2.9.3",
     "typescript": "^5.1.6"
