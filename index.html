@@ -1,0 +1,33 @@
+{% extends 'books/base.html' %}
+
+{% block title %}Welcome - Low Maintenance Book Club{% endblock %}
+
+{% block header %}
+<h1 class="main-title">Welcome to the Low Maintenance Book Club!</h1>
+{% endblock %}
+{% block content %}
+<div class="welcome-section">
+    <h1 class="hero-title">Welcome to the Low Maintenance Book Club!</h1>
+</div>
+
+<div class="content-sections">
+    <section class="main-section">
+        <h2 class="section-label">Recently Suggested:</h2>
+        <div class="book-entries">
+            {% for book in books %}
+            <article class="book-entry">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">{{ book.author }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <section class="side-section">
+        <h2 class="section-label">Quick Links</h2>
+        <div class="quick-links">
+            <a href="{% url 'suggest' %}" class="feature-link">SUGGEST A BOOK!</a>
+        </div>
+    </section>
+</div>
+{% endblock %}
