@@ -1,72 +1,85 @@
-name: Build and Deploy
+name: Deploy to GitHub Pages
+
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
+  # Build job
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'frontend/package.json'
-    
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: npm install
-    
-    - name: Build Frontend
-      working-directory: ./frontend
-      run: npm run build:github
-    
-    - name: Debug Directory Structure
-      run: |
-        echo "Current working directory: $(pwd)"
-        echo "Listing directories:"
-        ls -la
-        echo "Listing frontend directory:"
-        ls -la frontend || echo "Frontend directory not found"
-        echo "Listing books directory:"
-        ls -la books || echo "Books directory not found"
-    
-    - name: Copy HTML templates
-      working-directory: ./
-      run: |
-        mkdir -p ./dist
-        
-        # Check if static directory exists before copying
-        if [ -d "books/static/books" ]; then
-          cp -r books/static/books/* ./dist/ || echo "Warning: No static files found"
-        else
-          echo "Static directory not found, skipping static file copy"
-        fi
-        
-        # Check if templates directory exists before copying
-        if [ -d "books/templates/books" ] && [ -f "books/templates/books/index.html" ]; then
-          cp books/templates/books/index.html ./dist/index.html
-        else
-          echo "Template file not found, creating placeholder index.html"
-          echo "<html><body><h1>Book Club</h1><p>Site under construction</p></body></html>" > ./dist/index.html
-        fi
-        
-        # Ensure the dist directory has frontend assets
-        if [ -d "frontend/dist" ]; then
-          cp -r frontend/dist/* ./dist/ || echo "Warning: No frontend dist files found"
-        fi
-        
-        echo "Contents of dist directory:"
-        ls -la ./dist
-    
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: dist
-        branch: gh-pages
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package.json'
+      
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+      
+      - name: Build frontend assets
+        working-directory: ./frontend
+        run: |
+          npm install @parcel/transformer-sass
+          npm run build:github
+      
+      - name: Create deployment directory
+        run: |
+          mkdir -p ./_site
+          
+          # Copy frontend assets if they exist
+          if [ -d "frontend/dist" ]; then
+            cp -r frontend/dist/* ./_site/ || echo "No frontend assets found"
+          fi
+          
+          # Copy Django templates for GitHub Pages
+          if [ -d "books/templates/books" ] && [ -f "books/templates/books/index.html" ]; then
+            cp books/templates/books/index.html ./_site/index.html
+          else
+            # Create a fallback index.html
+            echo "<html><head><title>Book Club</title><link rel=\"stylesheet\" href=\"main.css\"></head><body><h1>Book Club</h1><p>Welcome to the Book Club site!</p><script src=\"main.js\"></script></body></html>" > ./_site/index.html
+          fi
+          
+          echo "Contents of deployment directory:"
+          ls -la ./_site
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
 
