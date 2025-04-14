@@ -52,8 +52,8 @@ jobs:
           mkdir -p ./_site
           
           # Copy frontend assets if they exist
-          if [ -d "frontend/dist" ]; then
-            cp -r frontend/dist/* ./_site/ || echo "No frontend assets found"
+          if [ -d "books/static/books/" ]; then
+            cp -r books/static/books/* ./_site/ || echo "No frontend assets found"
           fi
           
           # Copy Django templates for GitHub Pages
