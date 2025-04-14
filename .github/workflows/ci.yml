@@ -29,6 +29,7 @@ jobs:
     - name: Copy HTML templates
       run: |
         mkdir -p ./dist
+        pwd
         cp -r books/static/books/* ./dist/
         cp books/templates/books/index.html ./dist/index.html
     
