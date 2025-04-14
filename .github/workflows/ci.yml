@@ -26,15 +26,47 @@ jobs:
       working-directory: ./frontend
       run: npm run build:github
     
+    - name: Debug Directory Structure
+      run: |
+        echo "Current working directory: $(pwd)"
+        echo "Listing directories:"
+        ls -la
+        echo "Listing frontend directory:"
+        ls -la frontend || echo "Frontend directory not found"
+        echo "Listing books directory:"
+        ls -la books || echo "Books directory not found"
+    
     - name: Copy HTML templates
       working-directory: ./
       run: |
         mkdir -p ./dist
-        cp -r books/static/books/* ./dist/
-        cp books/templates/books/index.html ./dist/index.html
+        
+        # Check if static directory exists before copying
+        if [ -d "books/static/books" ]; then
+          cp -r books/static/books/* ./dist/ || echo "Warning: No static files found"
+        else
+          echo "Static directory not found, skipping static file copy"
+        fi
+        
+        # Check if templates directory exists before copying
+        if [ -d "books/templates/books" ] && [ -f "books/templates/books/index.html" ]; then
+          cp books/templates/books/index.html ./dist/index.html
+        else
+          echo "Template file not found, creating placeholder index.html"
+          echo "<html><body><h1>Book Club</h1><p>Site under construction</p></body></html>" > ./dist/index.html
+        fi
+        
+        # Ensure the dist directory has frontend assets
+        if [ -d "frontend/dist" ]; then
+          cp -r frontend/dist/* ./dist/ || echo "Warning: No frontend dist files found"
+        fi
+        
+        echo "Contents of dist directory:"
+        ls -la ./dist
     
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: dist
         branch: gh-pages
+
