@@ -27,7 +27,6 @@ jobs:
       run: npm run build:github
     
     - name: Copy HTML templates
-      working-directory: ./
       run: |
         mkdir -p ./dist
         cp -r books/static/books/* ./dist/
