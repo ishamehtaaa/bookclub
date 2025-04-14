@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Frontend assets for Book Club",
   "scripts": {
-    "build": "parcel build src/ts/*.ts src/scss/*.scss --dist-dir ../bookclub/static/bookclub",
+    "build": "parcel build src/ts/*.ts src/scss/*.scss --dist-dir ../books/static/books",
     "build:github": "parcel build src/ts/*.ts src/scss/*.scss --dist-dir ./dist --public-url ./"
   },
   "devDependencies": {

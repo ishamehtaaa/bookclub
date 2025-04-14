@@ -30,7 +30,7 @@ jobs:
       working-directory: ./
       run: |
         mkdir -p ./dist
-        cp -r frontend/dist/* ./dist/
+        cp -r books/static/books/* ./dist/
         cp books/templates/books/index.html ./dist/index.html
     
     - name: Deploy to GitHub Pages
